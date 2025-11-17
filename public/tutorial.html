@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutorial - Como Assistir na TV</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+
+        .method {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .method h2 {
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            color: #f5576c;
+        }
+
+        .method h3 {
+            font-size: 1.3em;
+            margin: 20px 0 10px;
+        }
+
+        .steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .steps li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-left: 40px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #f5576c;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .url-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: monospace;
+            word-break: break-all;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #f5576c;
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            margin: 10px 10px 10px 0;
+            transition: transform 0.3s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .tip {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-left: 4px solid #f5576c;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .apps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .app-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .app-card h4 {
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .highlight {
+            color: #f5576c;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .method h2 {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📺 Como Assistir IPTV na TV</h1>
+
+        <div class="tip">
+            <strong>⚡ MÉTODO MAIS FÁCIL:</strong> Use o navegador da sua Smart TV e acesse o link abaixo!
+            <div class="url-box" id="playerUrl">Carregando...</div>
+            <strong>Não precisa instalar nada!</strong>
+        </div>
+
+        <!-- Smart TV -->
+        <div class="method">
+            <h2>🎯 Método 1: Smart TV (Apps)</h2>
+
+            <h3>Apps Recomendados:</h3>
+            <div class="apps">
+                <div class="app-card">
+                    <h4>IPTV Smarters Pro</h4>
+                    <p>⭐ Mais popular</p>
+                </div>
+                <div class="app-card">
+                    <h4>GSE Smart IPTV</h4>
+                    <p>✅ Muito bom</p>
+                </div>
+                <div class="app-card">
+                    <h4>Lazy IPTV</h4>
+                    <p>🎯 Simples</p>
+                </div>
+            </div>
+
+            <h3>Configuração IPTV Smarters Pro:</h3>
+            <ol class="steps">
+                <li>Baixe "IPTV Smarters Pro" na loja de apps da sua TV</li>
+                <li>Abra o app e escolha "Login with M3U URL"</li>
+                <li>Cole este link:
+                    <div class="url-box" id="m3uUrl">Carregando...</div>
+                </li>
+                <li>Clique em "Add User"</li>
+                <li>Pronto! Aproveite! 🎉</li>
+            </ol>
+        </div>
+
+        <!-- Chromecast -->
+        <div class="method">
+            <h2>🎯 Método 2: Chromecast</h2>
+            <ol class="steps">
+                <li>No celular, acesse o link do player</li>
+                <li>Escolha o canal que deseja assistir</li>
+                <li>Toque no ícone do Chromecast (📱)</li>
+                <li>Selecione sua TV</li>
+                <li>Assista na TV! 📺</li>
+            </ol>
+        </div>
+
+        <!-- TV Box -->
+        <div class="method">
+            <h2>🎯 Método 3: TV Box Android</h2>
+            <ol class="steps">
+                <li>Conecte a TV Box na TV via HDMI</li>
+                <li>Abra a Google Play Store</li>
+                <li>Procure por "IPTV Smarters Pro"</li>
+                <li>Instale o aplicativo</li>
+                <li>Configure com o link M3U acima</li>
+            </ol>
+
+            <div class="tip">
+                <strong>💡 Dica:</strong> TV Box é a forma mais estável de assistir IPTV!
+            </div>
+        </div>
+
+        <!-- Fire TV Stick -->
+        <div class="method">
+            <h2>🎯 Método 4: Fire TV Stick</h2>
+            <ol class="steps">
+                <li>Abra a Amazon App Store</li>
+                <li>Procure "IPTV Smarters Pro"</li>
+                <li>Instale o app</li>
+                <li>Configure com o link M3U</li>
+            </ol>
+        </div>
+
+        <!-- Celular + HDMI -->
+        <div class="method">
+            <h2>🎯 Método 5: Celular + Cabo HDMI</h2>
+            <ol class="steps">
+                <li>Compre um cabo USB-C para HDMI (Android) ou Lightning para HDMI (iPhone)</li>
+                <li>Conecte o celular na TV</li>
+                <li>Acesse o link do player no celular</li>
+                <li>A imagem será espelhada na TV automaticamente</li>
+            </ol>
+        </div>
+
+        <!-- Computador -->
+        <div class="method">
+            <h2>🎯 Método 6: Computador/Notebook</h2>
+            <ol class="steps">
+                <li>Conecte o computador na TV via HDMI</li>
+                <li>Abra o navegador (Chrome, Firefox, etc)</li>
+                <li>Acesse o link do player</li>
+                <li>Pressione F11 para tela cheia</li>
+                <li>Assista! 🎬</li>
+            </ol>
+        </div>
+
+        <!-- Problemas Comuns -->
+        <div class="method">
+            <h2>🔧 Problemas Comuns</h2>
+
+            <h3>❌ Canal não carrega</h3>
+            <ul class="steps">
+                <li>Verifique sua conexão com a internet</li>
+                <li>Reinicie o app</li>
+                <li>Tente outro canal para testar</li>
+                <li>Se persistir, entre em contato com suporte</li>
+            </ul>
+
+            <h3>❌ Vídeo travando</h3>
+            <ul class="steps">
+                <li>Sua internet precisa ser de pelo menos 10 Mbps</li>
+                <li>Use cabo de rede ao invés de Wi-Fi (mais estável)</li>
+                <li>Feche outros apps que estejam usando internet</li>
+            </ul>
+
+            <h3>❌ Link não funciona</h3>
+            <ul class="steps">
+                <li>Copie o link novamente (pode ter copiado errado)</li>
+                <li>Verifique se sua assinatura está ativa</li>
+                <li>Entre em contato com o suporte</li>
+            </ul>
+        </div>
+
+        <!-- Links Importantes -->
+        <div class="method">
+            <h2>🔗 Seus Links de Acesso</h2>
+
+            <h3>🌐 Player Web (navegador)</h3>
+            <div class="url-box" id="playerUrl2">Carregando...</div>
+
+            <h3>📝 Playlist M3U (para apps)</h3>
+            <div class="url-box" id="m3uUrl2">Carregando...</div>
+
+            <h3>💡 Como usar:</h3>
+            <ul class="steps">
+                <li><strong>Player Web:</strong> Abra no navegador da sua Smart TV ou computador</li>
+                <li><strong>Playlist M3U:</strong> Cole nos apps de IPTV (IPTV Smarters, GSE, etc)</li>
+            </ul>
+        </div>
+
+        <!-- Botões -->
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="/" class="btn">← Voltar ao Início</a>
+            <a href="#" onclick="window.print(); return false;" class="btn">🖨️ Imprimir Tutorial</a>
+        </div>
+
+        <div class="tip" style="margin-top: 30px; text-align: center;">
+            <strong>📞 Precisa de ajuda?</strong><br>
+            Entre em contato com nosso suporte!
+        </div>
+    </div>
+
+    <script>
+        // Detectar URL base
+        const baseUrl = window.location.origin;
+
+        // URLs principais
+        const playerUrl = `${baseUrl}/player/channels`;
+        const m3uUrl = `${baseUrl}/api/channels/playlist.m3u8`;
+
+        // Atualizar URLs na página
+        document.getElementById('playerUrl').textContent = playerUrl;
+        document.getElementById('playerUrl2').textContent = playerUrl;
+        document.getElementById('m3uUrl').textContent = m3uUrl;
+        document.getElementById('m3uUrl2').textContent = m3uUrl;
+
+        // Copiar ao clicar
+        document.querySelectorAll('.url-box').forEach(box => {
+            box.style.cursor = 'pointer';
+            box.title = 'Clique para copiar';
+            box.addEventListener('click', function() {
+                navigator.clipboard.writeText(this.textContent).then(() => {
+                    const original = this.textContent;
+                    this.textContent = '✅ Copiado!';
+                    setTimeout(() => {
+                        this.textContent = original;
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

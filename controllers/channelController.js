@@ -227,6 +227,90 @@ const deleteVOD = async (req, res) => {
   }
 };
 
+// Gerar playlist M3U para apps de IPTV
+const getM3UPlaylist = async (req, res) => {
+  try {
+    const { username, category } = req.query;
+    let sql = 'SELECT * FROM channels WHERE active = 1';
+    const params = [];
+
+    if (category) {
+      sql += ' AND category = ?';
+      params.push(category);
+    }
+
+    sql += ' ORDER BY category, name ASC';
+
+    const channels = await db.query(sql, params);
+
+    // Gerar arquivo M3U
+    let m3u = '#EXTM3U\n';
+
+    channels.forEach(channel => {
+      const tvgLogo = channel.logo_url || '';
+      const groupTitle = channel.category || 'Geral';
+      const tvgId = `channel-${channel.id}`;
+
+      m3u += `#EXTINF:-1 tvg-id="${tvgId}" tvg-name="${channel.name}" tvg-logo="${tvgLogo}" group-title="${groupTitle}",${channel.name}\n`;
+      m3u += `${channel.stream_url}\n`;
+    });
+
+    res.setHeader('Content-Type', 'audio/x-mpegurl');
+    res.setHeader('Content-Disposition', 'attachment; filename="playlist.m3u8"');
+    res.send(m3u);
+  } catch (error) {
+    console.error('Erro ao gerar playlist M3U:', error);
+    res.status(500).json({ error: 'Erro ao gerar playlist M3U' });
+  }
+};
+
+// Gerar Xtream Codes API compatível
+const getXtreamCategories = async (req, res) => {
+  try {
+    const categories = await db.query(
+      'SELECT DISTINCT category FROM channels WHERE active = 1 AND category IS NOT NULL ORDER BY category'
+    );
+
+    const formattedCategories = categories.map((cat, index) => ({
+      category_id: index + 1,
+      category_name: cat.category,
+      parent_id: 0
+    }));
+
+    res.json(formattedCategories);
+  } catch (error) {
+    console.error('Erro ao buscar categorias Xtream:', error);
+    res.status(500).json({ error: 'Erro ao buscar categorias' });
+  }
+};
+
+const getXtreamChannels = async (req, res) => {
+  try {
+    const { category_id } = req.query;
+    const channels = await db.query('SELECT * FROM channels WHERE active = 1 ORDER BY name');
+
+    const formattedChannels = channels.map(ch => ({
+      num: ch.id,
+      name: ch.name,
+      stream_type: 'live',
+      stream_id: ch.id,
+      stream_icon: ch.logo_url || '',
+      epg_channel_id: `channel-${ch.id}`,
+      added: ch.created_at,
+      category_id: ch.category || 'Geral',
+      custom_sid: '',
+      tv_archive: 0,
+      direct_source: ch.stream_url,
+      tv_archive_duration: 0
+    }));
+
+    res.json(formattedChannels);
+  } catch (error) {
+    console.error('Erro ao buscar canais Xtream:', error);
+    res.status(500).json({ error: 'Erro ao buscar canais' });
+  }
+};
+
 module.exports = {
   getAllChannels,
   getChannelById,
@@ -238,5 +322,8 @@ module.exports = {
   getVODById,
   createVOD,
   updateVOD,
-  deleteVOD
+  deleteVOD,
+  getM3UPlaylist,
+  getXtreamCategories,
+  getXtreamChannels
 };

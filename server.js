@@ -39,6 +39,11 @@ app.get('/player/:id', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'player.html'));
 });
 
+// Rota do tutorial
+app.get('/tutorial', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'tutorial.html'));
+});
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
