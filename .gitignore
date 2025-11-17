@@ -1,0 +1,9 @@
+node_modules/
+*.sqlite
+.env
+uploads/*
+!uploads/.gitkeep
+streams/*
+!streams/.gitkeep
+*.log
+.DS_Store

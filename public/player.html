@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Player - IPTV Server</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+        }
+
+        .header {
+            background: #16213e;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header h1 {
+            font-size: 1.5em;
+        }
+
+        .header a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            background: #f5576c;
+            border-radius: 8px;
+        }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 20px auto;
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            height: calc(100vh - 120px);
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .channel-list {
+            list-style: none;
+        }
+
+        .channel-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            background: #0f3460;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .channel-item:hover {
+            background: #1a4d8f;
+            transform: translateX(5px);
+        }
+
+        .channel-item.active {
+            background: #f5576c;
+        }
+
+        .channel-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .channel-info {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .player-container {
+            flex: 1;
+            background: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-info {
+            margin-top: 20px;
+        }
+
+        .video-title {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+        }
+
+        .video-description {
+            opacity: 0.8;
+            line-height: 1.6;
+        }
+
+        .video-stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quality-selector {
+            margin-top: 20px;
+        }
+
+        .quality-selector button {
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #0f3460;
+            color: white;
+            cursor: pointer;
+        }
+
+        .quality-selector button.active {
+            background: #f5576c;
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #0f3460;
+            color: white;
+            font-size: 1em;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            border-radius: 8px;
+            background: #0f3460;
+            cursor: pointer;
+        }
+
+        .tab.active {
+            background: #f5576c;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📺 IPTV Player</h1>
+        <a href="/">← Voltar</a>
+    </div>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab('channels')">📡 Canais</div>
+                <div class="tab" onclick="switchTab('vod')">🎬 VOD</div>
+            </div>
+
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Pesquisar...">
+            </div>
+
+            <h2 id="listTitle">Canais Disponíveis</h2>
+            <ul class="channel-list" id="channelList"></ul>
+        </div>
+
+        <div class="player-container">
+            <div class="video-wrapper">
+                <video id="videoPlayer" controls>
+                    Seu navegador não suporta o elemento de vídeo.
+                </video>
+            </div>
+
+            <div class="video-info">
+                <h2 class="video-title" id="videoTitle">Selecione um canal ou vídeo</h2>
+                <p class="video-description" id="videoDescription">
+                    Escolha um conteúdo da lista ao lado para começar a assistir.
+                </p>
+
+                <div class="video-stats">
+                    <div class="stat">
+                        <span>👁️</span>
+                        <span id="viewCount">0 visualizações</span>
+                    </div>
+                    <div class="stat">
+                        <span>📁</span>
+                        <span id="categoryInfo">-</span>
+                    </div>
+                </div>
+
+                <div class="quality-selector" id="qualitySelector" style="display: none;">
+                    <h3>Qualidade:</h3>
+                    <button class="active" onclick="changeQuality('low')">Baixa</button>
+                    <button onclick="changeQuality('medium')">Média</button>
+                    <button onclick="changeQuality('high')">Alta</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'channels';
+        let allContent = [];
+        let currentContent = null;
+        let hls = null;
+
+        // Carregar conteúdo inicial
+        loadContent();
+
+        async function loadContent() {
+            try {
+                const [channels, vod] = await Promise.all([
+                    fetch('/api/channels/channels').then(r => r.json()),
+                    fetch('/api/channels/vod').then(r => r.json())
+                ]);
+
+                allContent = {
+                    channels: channels,
+                    vod: vod
+                };
+
+                displayContent();
+            } catch (error) {
+                console.error('Erro ao carregar conteúdo:', error);
+            }
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('listTitle').textContent =
+                tab === 'channels' ? 'Canais Disponíveis' : 'Vídeos Disponíveis';
+
+            displayContent();
+        }
+
+        function displayContent() {
+            const content = allContent[currentTab] || [];
+            const list = document.getElementById('channelList');
+
+            list.innerHTML = content.map(item => {
+                const name = currentTab === 'channels' ? item.name : item.title;
+                const info = currentTab === 'channels'
+                    ? `${item.category || 'Sem categoria'} • ${item.views} views`
+                    : `${item.category || 'Sem categoria'} • ${item.year || '-'}`;
+
+                return `
+                    <li class="channel-item" onclick="playContent(${item.id}, '${currentTab}')">
+                        <div class="channel-name">${name}</div>
+                        <div class="channel-info">${info}</div>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        async function playContent(id, type) {
+            try {
+                const endpoint = type === 'channels'
+                    ? `/api/channels/channels/${id}`
+                    : `/api/channels/vod/${id}`;
+
+                const response = await fetch(endpoint);
+                currentContent = await response.json();
+
+                const name = type === 'channels' ? currentContent.name : currentContent.title;
+                const description = currentContent.description || 'Sem descrição disponível';
+                const url = type === 'channels' ? currentContent.stream_url : currentContent.video_url;
+
+                document.getElementById('videoTitle').textContent = name;
+                document.getElementById('videoDescription').textContent = description;
+                document.getElementById('viewCount').textContent = `${currentContent.views} visualizações`;
+                document.getElementById('categoryInfo').textContent = currentContent.category || 'Sem categoria';
+
+                // Destacar item selecionado
+                document.querySelectorAll('.channel-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.target.closest('.channel-item').classList.add('active');
+
+                // Iniciar player
+                playVideo(url);
+            } catch (error) {
+                console.error('Erro ao carregar conteúdo:', error);
+            }
+        }
+
+        function playVideo(url) {
+            const video = document.getElementById('videoPlayer');
+
+            if (hls) {
+                hls.destroy();
+            }
+
+            if (url.includes('.m3u8')) {
+                // HLS Stream
+                if (Hls.isSupported()) {
+                    hls = new Hls();
+                    hls.loadSource(url);
+                    hls.attachMedia(video);
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                        video.play();
+                    });
+                } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                    video.src = url;
+                    video.addEventListener('loadedmetadata', () => {
+                        video.play();
+                    });
+                }
+            } else {
+                // Direct video
+                video.src = url;
+                video.play();
+            }
+        }
+
+        function changeQuality(quality) {
+            document.querySelectorAll('.quality-selector button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Implementar mudança de qualidade se necessário
+            console.log('Qualidade alterada para:', quality);
+        }
+
+        // Pesquisa
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const search = e.target.value.toLowerCase();
+            const content = allContent[currentTab] || [];
+
+            const filtered = content.filter(item => {
+                const name = currentTab === 'channels' ? item.name : item.title;
+                return name.toLowerCase().includes(search);
+            });
+
+            const list = document.getElementById('channelList');
+            list.innerHTML = filtered.map(item => {
+                const name = currentTab === 'channels' ? item.name : item.title;
+                const info = currentTab === 'channels'
+                    ? `${item.category || 'Sem categoria'} • ${item.views} views`
+                    : `${item.category || 'Sem categoria'} • ${item.year || '-'}`;
+
+                return `
+                    <li class="channel-item" onclick="playContent(${item.id}, '${currentTab}')">
+                        <div class="channel-name">${name}</div>
+                        <div class="channel-info">${info}</div>
+                    </li>
+                `;
+            }).join('');
+        });
+    </script>
+</body>
+</html>
